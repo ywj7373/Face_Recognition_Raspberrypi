@@ -9,7 +9,6 @@
 using namespace std;
 using namespace tflite;
 using namespace cv;
-using namespace dlib;
 
 class feature_extractor{
   private:

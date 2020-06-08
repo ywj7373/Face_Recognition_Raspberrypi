@@ -7,7 +7,6 @@
 using namespace std;
 using namespace tflite;
 using namespace cv;
-using namespace dlib;
 
 //you need to feed imgs as n*112*112*3 float array
 feature_extractor::feature_extractor(char* modelname, int n, float* imgs, float th){
