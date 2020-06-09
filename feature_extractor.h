@@ -8,7 +8,6 @@
 
 using namespace std;
 using namespace tflite;
-using namespace cv;
 
 class feature_extractor{
   private:
@@ -16,9 +15,11 @@ class feature_extractor{
     int img_num;
     float* registered_feature;
     float threshold;
+    float* tmp;
 
   public:
-    feature_extractor(char* modelname, int n, float* imgs, float th);
+    feature_extractor(char* modelname, float th);
+    void register_imgs(int n, float* imgs);
     bool match(float* img);
     void get_feature(float* img, float* feature);
 }

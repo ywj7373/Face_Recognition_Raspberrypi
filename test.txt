@@ -1,0 +1,3 @@
+apple.jpg
+banana.jpg
+cherry.jpg
