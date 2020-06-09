@@ -1,14 +1,8 @@
-
-#include <dlib/image_processing/frontal_face_detector.h>
-#include <dlib/image_processing.h>
-#include <dlib/gui_widgets.h>
-#include <dlib/opencv.h>
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <time.h>
 
-using namespace dlib;
 using namespace std;
 using namespace cv;
 
@@ -22,30 +16,36 @@ int main() {
         // Open the default camera
         VideoCapture cap(0);
 	
-	// Set FPS to 15
-	cap.set(CAP_PROP_FPS, 15);
+	// Set FPS to 30
+	cap.set(CAP_PROP_FPS, 30);
 	
-	cv::Mat img, img_small;
+	cv::Mat img, img_small, img_gray;
+	
+	// Set Time
 	time_t prevTime, curTime;
 	prevTime = 0;
 	
 	// Get Face Detector
-        frontal_face_detector detector = get_frontal_face_detector();
+	CascadeClassifier face_cascade;
+        if (!face_cascade.load("/home/pi/workspace/face_recognition_raspberrypi/haarcascade_frontalface_default.xml")) {
+		cerr << "Error loading xml\n";
+		return 0;
+	}
 	
-	// bounding box
+	// Bounding box
 	int line_width = 3;
 
 	int count = 0;
-	std::vector<dlib::rectangle> faces;
+	std::vector<Rect> faces;
 	
 	while(1) {
 	    	// Calculate FPS
-		if (count % 120 == 0) {
+		if (count % 30 == 0) {
 			time(&curTime);
 	        	double diff = difftime(curTime, prevTime);
 			cout << diff << endl;
 			prevTime = curTime;
-			double fps = 120/diff;
+			double fps = 30/diff;
 			cout << "Estimated FPS : " << fps << endl;
 		}
 		// Grab a frame
@@ -53,20 +53,20 @@ int main() {
 		
 		// Resize image
 		resize(img, img_small, Size(), 1.0/DOWNSAMPLE_RATIO, 1.0/DOWNSAMPLE_RATIO);
-		
-		// Convert Mat to something dlib can deal with
-		dlib::cv_image<bgr_pixel> cimg(img_small);
+		// Change color to Gray
+		cvtColor(img_small, img_gray, COLOR_BGR2GRAY);
+		equalizeHist(img_gray, img_gray);
 
 		// Detect Faces and skip frames
-		//if (count % SKIP_FRAMES == 0)
-		faces = detector(cimg);
-		cout << faces.size() << endl;	
+		if (count % SKIP_FRAMES == 0) {
+			face_cascade.detectMultiScale(img_gray, faces, 1.1, 2, 9 | CASCADE_SCALE_IMAGE, Size(30, 30));
+			cout << faces.size() << endl;
+		}
+
 		// Draw rectange
 		for(int i = 0; i < faces.size(); i++) {
-			dlib::rectangle face = faces[i];
-			cv::rectangle(img, Point(face.left()*DOWNSAMPLE_RATIO, \
-			face.top()*DOWNSAMPLE_RATIO), Point(face.right()*DOWNSAMPLE_RATIO,\ 
-			face.bottom()*DOWNSAMPLE_RATIO), Scalar(0, 255, 0), line_width); 
+			Rect face = faces[i];
+			cv::rectangle(img, Point(face.x*DOWNSAMPLE_RATIO, face.y*DOWNSAMPLE_RATIO), Point((face.x + face.width)*DOWNSAMPLE_RATIO, (face.y + face.height)*DOWNSAMPLE_RATIO), Scalar(0, 255, 0), line_width); 
 		}
 
 		imshow("result", img);

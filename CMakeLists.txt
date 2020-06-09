@@ -6,11 +6,33 @@ project(FaceRecognition)
 # add opencv library
 find_package(OpenCV REQUIRED)
 
-# add dlib library
-add_subdirectory(./dlib dlib_build)
-
 # target to compile
-add_executable(face_recognition face_detection.cpp)
+add_executable(face_recognition face_recognition.cpp)
+add_executable(encode_faces encode_faces.cpp)
+
+# add pthreads
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+target_link_libraries(encode_faces Threads::Threads)
+
+# set tflite path
+set (TENSORFLOW_PATH "/home/pi/workspace/tensorflow_src")
+set (TFLITE_PATH "${TENSORFLOW_PATH}/tensorflow/lite")
 
 # link cpp to dlib
-target_link_libraries(face_recognition dlib::dlib ${OpenCV_LIBS})
+target_link_libraries(face_recognition ${OpenCV_LIBS})
+target_link_libraries(encode_faces ${OpenCV_LIBS})
+
+# include tflite directories
+target_include_directories(encode_faces PUBLIC
+	${TENSORFLOW_PATH}
+	${TFLITE_PATH}
+	${TFLITE_PATH}/tools/make/downloads
+	${TFLITE_PATH}/tools/make/downloads/flatbuffers/include
+	${TFLITE_PATH}/tools/make/gen/rpi_arm7l/lib
+	)
+
+# link tflite static library
+target_link_libraries(encode_faces
+	${TFLITE_PATH}/tools/make/gen/rpi_armv7l/lib/libtensorflow-lite.a
+	)
