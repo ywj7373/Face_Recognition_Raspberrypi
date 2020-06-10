@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.15.5)
 # name the project
 project(FaceRecognition)
 
+# add dlib directory
+add_subdirectory(../dlib dlib_build)
+
 # add opencv library
 find_package(OpenCV REQUIRED)
 
@@ -21,7 +24,7 @@ set (TFLITE_PATH "${TENSORFLOW_PATH}/tensorflow/lite")
 
 # link OpenCV
 target_link_libraries(face_recognition ${OpenCV_LIBS})
-target_link_libraries(encode_faces ${OpenCV_LIBS})
+target_link_libraries(encode_faces ${OpenCV_LIBS} dlib::dlib)
 
 # include tflite directories
 target_include_directories(encode_faces PUBLIC

@@ -4,6 +4,10 @@
 #include <vector>
 #include <string>
 #include <opencv2/opencv.hpp>
+#include <dlib/image_io.h>
+#include <dlib/opencv.h>
+#include <dlib/image_processing.h>
+#include <dlib/image_processing/frontal_face_detector.h>
 #include <tensorflow/lite/interpreter.h>
 #include <tensorflow/lite/model.h>
 #include <tensorflow/lite/tools/gen_op_registration.h>
@@ -44,16 +48,17 @@ string getFileName(string filepath) {
 	return filename;
 }
 
-vector<Rect> face_detect(CascadeClassifier face_cascade, Mat img) {
-	vector<Rect> faces;
+vector<Rect> face_detect(dlib::frontal_face_detector& detector, Mat img) {
+	dlib::cv_image<dlib::bgr_pixel> cimg(img);
+	vector<Rect> result;
 
-	Mat img_gray;
-	cvtColor(img, img_gray, COLOR_BGR2GRAY);
-	equalizeHist(img_gray, img_gray);
-
-	face_cascade.detectMultiScale(img_gray, faces, 1.1, 2, 9 | CASCADE_SCALE_IMAGE, Size(30, 30));
+	vector<dlib::rectangle> faces = detector(cimg);
+	for(int i = 0; i < faces.size(); i++) {
+		dlib::rectangle face = faces[i];
+		result.push_back(Rect(face.left(), face.top(), face.width(), face.height()));
+	}
 	
-	return faces;
+	return result;
 }
 
 Mat preprocess(Mat img) {
@@ -87,13 +92,6 @@ int main(int argc, char* argv[]) {
 	ofstream output_file("encodings.txt");
 	int embedded_size = 0;
 	
-	// Load face detector
-	CascadeClassifier face_cascade;
-	if (!face_cascade.load("../face_detector/haarcascade_frontalface_default.xml")) {
-		cerr << "Error loading xml\n";
-		return -1;
-	}
-	
 	// Get image directory
 	if (argc < 2) {
 		cerr << "Please pass album directory\n";
@@ -104,6 +102,9 @@ int main(int argc, char* argv[]) {
 		cerr << "Please pass model directory\n";
 		return -1;
 	}
+	
+	// Get face detector
+	dlib:: frontal_face_detector detector = dlib::get_frontal_face_detector();
 	
 	// Load images
 	string img_path(argv[1]);	
@@ -147,7 +148,12 @@ int main(int argc, char* argv[]) {
 		}	
 		
 		// Detect face from the image
-		vector<Rect> faces = face_detect(face_cascade, img);
+		vector<Rect> faces = face_detect(detector, img);
+		
+		if (faces.size() == 0) {
+			cout << "No face detected in " << filename << " image!\n";
+			continue;
+		}
 
 		for(int j = 0; j < faces.size(); j++) {
 			Mat face = img(faces[j]);
@@ -161,9 +167,8 @@ int main(int argc, char* argv[]) {
 			// Encode image
 			encodings.push_back(face_encoding(interpreter, embedded_size, face));
 
-			cout << "# " << j << " face from " << filename << " encoding completed\n";
-		
-			imshow("result", face);
+			cout << "#" << j+1 << " face from " << filename << " encoding completed\n";
+			imshow(filename, face);	
 		}
 	}	
 
