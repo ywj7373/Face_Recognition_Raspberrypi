@@ -14,7 +14,7 @@ void writeEncodingsToFile(ofstream& output_file, vector<float>& data);
 
 void writePersonNameToFile(ofstream& output_file, string name);
 
-vector<pair<string, vector<float>>> readEncodingsFromFile(ifstream& input_file);
+vector<pair<string, vector<float>>> readEncodingsFromFile(ifstream& input_file, int embedded_size);
 
 string getFileName(string filepath);
 

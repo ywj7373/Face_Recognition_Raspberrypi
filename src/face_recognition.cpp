@@ -28,11 +28,8 @@ vector<float> face_encoding(char* modelPath, Mat img) {
 	}	
 
 	// Get model dimensions
-	auto in = interpreter->inputs()[0];
 	auto out = interpreter->outputs()[0];
-	TfLiteIntArray* input_dims = interpreter->tensor(in)->dims;
-	TfLiteIntArray* output_dims = interpreter->tensor(out)->dims;
-	embedded_size = output_dims->data[1];
+	embedded_size = interpreter->tensor(out)->dims->data[1];
 	
 	// Start running model
 	interpreter->AllocateTensors();	
@@ -63,7 +60,6 @@ bool match(vector<float> img1, vector<float> img2, float threshold) {
 	float sum = 0.0f;
 
 	for(int i = 0; i < img1.size(); i++) {
-		cout << (img2[i] - img1[i]) << endl;
 		sum += pow(img2[i]-img1[i], 2);	
 	}
 	
@@ -72,5 +68,25 @@ bool match(vector<float> img1, vector<float> img2, float threshold) {
 	}
 
 	return false;
+}
+
+int get_embedded_size(char* modelPath) {
+	auto model = tflite::FlatBufferModel::BuildFromFile(modelPath);
+	int embedded_size = 0;
+	vector<float> encoding;
+	
+	// Build the interpreter
+	tflite::ops::builtin::BuiltinOpResolver resolver;
+	unique_ptr<Interpreter> interpreter;
+	InterpreterBuilder(*model.get(), resolver)(&interpreter);
+	if (!interpreter) {
+		cerr << "Failed to construct Interpreter\n";
+	}	
+
+	// Get model dimensions
+	auto out = interpreter->outputs()[0];
+	embedded_size = interpreter->tensor(out)->dims->data[1];
+	
+	return embedded_size;
 }
 

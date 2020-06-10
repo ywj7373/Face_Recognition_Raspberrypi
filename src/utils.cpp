@@ -37,12 +37,12 @@ void writePersonNameToFile(ofstream &output_file, string name) {
 	output_file << name << "\n";
 }
 
-vector<pair<string, vector<float>>> readEncodingsFromFile(ifstream& input_file) {
+vector<pair<string, vector<float>>> readEncodingsFromFile(ifstream& input_file, int embedded_size) {
 	vector<pair<string, vector<float>>> encodings;
 	string name;
 	while (getline(input_file, name)) {
 		vector<float> encoding;
-		for(int i = 0; i < 256; i++) {
+		for(int i = 0; i < embedded_size; i++) {
 			string line;
 			getline(input_file, line);
 			encoding.push_back(stof(line));
