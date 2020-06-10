@@ -19,7 +19,7 @@ target_link_libraries(encode_faces Threads::Threads)
 set (TENSORFLOW_PATH "/home/pi/workspace/tensorflow_src")
 set (TFLITE_PATH "${TENSORFLOW_PATH}/tensorflow/lite")
 
-# link cpp to dlib
+# link OpenCV
 target_link_libraries(face_recognition ${OpenCV_LIBS})
 target_link_libraries(encode_faces ${OpenCV_LIBS})
 
