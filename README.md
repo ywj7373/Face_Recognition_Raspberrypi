@@ -1,9 +1,10 @@
 # Real-time Face Recognition by using Deep Learning
 
 ## Requirments
-- OpenCV 
+- OpenCV 4.1.0
 - CMake 3.15.5
 - tensorflow
+- dlib 19.19
 
 ## Installation Instructions
 1. Install tensorflow
