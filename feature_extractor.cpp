@@ -7,7 +7,7 @@
 using namespace std;
 using namespace tflite;
 
-feature_extractor::feature_extractor(char* modelname, float th){
+feature_extractor::feature_extractor(const char* modelname, float th){
   //load model to interpreter
   unique_ptr<FlatBufferModel> model;
   tflite::ops::builtin::BuiltinOpResolver resolver;

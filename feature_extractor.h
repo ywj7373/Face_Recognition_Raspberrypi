@@ -18,9 +18,16 @@ class feature_extractor{
     float* tmp;
 
   public:
-    feature_extractor(char* modelname, float th);
+    //input model's path and threshold
+    feature_extractor(const char* modelname, float th);
+
+    //input n and n*112*112*3 float arr
     void register_imgs(int n, float* imgs);
+
+    //get either img contains register or not
     bool match(float* img);
+
+    //get only feature
     void get_feature(float* img, float* feature);
 }
 

@@ -28,11 +28,14 @@ float* get_faces(vector<string> imglist){
   Mat img, face;
   for(int i = 0; i < imglist.size(); i++){
     img = imread(imglist[i], IMREAD_COLOR);
-    /***
-      somehow get face
-      ***/
+
+    face_detect(img, face);
+
     memcpy(faces+i*112*112*3, face.data, 112*112*3*sizeof(float));
   }
 
   return faces;
 }
+
+
+void face_detect(
