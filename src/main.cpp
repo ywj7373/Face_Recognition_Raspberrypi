@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <unordered_map>
 
 #include "utils.h"
 #include "face_recognition.h"
@@ -98,20 +99,26 @@ int main(int argc, char* argv[]) {
 					encoding = face_encoding(argv[1], face);
 					cout << "Face Recognition Inference Time: " << timer_stop(2) << "\n";
 					
+					unordered_map<string, int> name_cnt;
+					int max_cnt = 0;
+					string max_num_name = "unidentified";
 					// Compare with album encodings
 					for(int j = 0; j < album_encodings.size(); j++) {
 						auto img = album_encodings[j];
 						string name = img.first;
 						vector<float> img_encoding = img.second;
 						
-						bool less = match(img_encoding, encoding, 1.20f);
+						bool less = match(img_encoding, encoding, 1.10f);
 						if (less) {
-							cout << name << " identified!!" << "\n";
-							faces_name[i] = name;
-							break;
+							int cnt = ++name_cnt[name];
+							if (cnt > max_cnt) {
+								max_cnt = cnt;
+								max_num_name = name;
+							}
 						}
-						else faces_name[i] = "unidentified";
 					}
+					cout << max_num_name << " identified!" << "\n";
+					faces_name[i] = max_num_name;
 				}
 			}
 			

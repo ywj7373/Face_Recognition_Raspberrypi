@@ -18,4 +18,6 @@ vector<pair<string, vector<float>>> readEncodingsFromFile(ifstream& input_file, 
 
 string getFileName(string filepath);
 
+string getPersonName(string filename);
+
 Mat preprocess(Mat img);

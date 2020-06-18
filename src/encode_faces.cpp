@@ -55,6 +55,7 @@ int main(int argc, char* argv[]) {
 	for(int i = 0; i < images.size(); i++) {
 		// Get image name
 		string filename = getFileName(images[i]);
+		string personName = getPersonName(filename);
 		
 		// Read image
 		Mat img = imread(images[i]);
@@ -77,20 +78,20 @@ int main(int argc, char* argv[]) {
 			Mat face = img(faces[j]);
 			
 			// Add the image name in the file
-			writePersonNameToFile(output_file, filename);
+			writePersonNameToFile(output_file, personName);
 
 			// Preprocess
 			face = preprocess(face);
 			
 			// Encode image
 			encoding = face_encoding(argv[2], face);
-			cout << "#" << j+1 << " face from " << filename << " encoding completed\n";
+			cout << "Face of " << personName << " encoding completed\n";
 			
 			// Write it to encodings.txt
 			writeEncodingsToFile(output_file, encoding);
 			
 			// Show face image
-			imshow(filename, face);	
+			imshow(personName, face);	
 		}
 	}	
 

@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <iterator>
 #include <vector>
 #include <string>
@@ -67,6 +68,18 @@ string getFileName(string filepath) {
 	}
 	
 	return filename;
+}
+
+string getPersonName(string file_name) {
+	vector<string> internal;
+	stringstream ss(file_name);
+	string temp;
+
+	while(getline(ss, temp, '_')) {
+		internal.push_back(temp);
+	}
+
+	return internal[1];
 }
 
 Mat preprocess(Mat img) {
