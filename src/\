@@ -46,6 +46,8 @@ int main(int argc, char* argv[]) {
 		
 		// Open the default camera
 		VideoCapture cap(0);
+		cv::namedWindow("Face Recognition");
+		cv::moveWindow("Face Recognition", 20, 20);	
 		cap.set(CAP_PROP_FPS, 30); // Set FPS to 30	
 		cv::Mat img, img_small, img_gray;
 		int frame_cnt = 0;
@@ -129,15 +131,12 @@ int main(int argc, char* argv[]) {
 				auto y = face.y * DOWNSAMPLE_RATIO;
 				auto width = (face.x + face.width) * DOWNSAMPLE_RATIO;
 				auto height = (face.y + face.height) * DOWNSAMPLE_RATIO;
-				cv::Scalar color = Scalar(0, 255, 0);
-				if (faces_name[i] == "unidentified")
-					color = Scalar(0, 0, 255);
-				cv::putText(img, faces_name[i], Point(x, y), 0, 0.75, color, 2);
-				cv::rectangle(img, Point(x, y+5), Point(width, height), color, line_width); 
+				cv::putText(img, faces_name[i], Point(x, y), 0, 0.75, Scalar(0, 255, 0), 2);
+				cv::rectangle(img, Point(x, y+5), Point(width, height), Scalar(0, 255, 0), line_width); 
 			}
 			cv::putText(img,fps, Point(30, 30), 0, 0.75, Scalar(0, 255, 0), 2);
-			imshow("Face Recognition", img);
-			moveWindow("Face Recognition", 900, 20);	
+			imshow("result", img);
+			
 			// Press ESC to exit
 			int c = waitKey(1);
 			if (c == 27) {

@@ -31,3 +31,16 @@ cmake ..
 cmake --build . --config Release
 ```
 5. Run program
+
+## How to run
+1. Put images to album directory
+2. Encode images
+```
+cd build/src
+./encode_faces ../../album ../../models/shuffle_optimize_0.25_512_121_quant.tflite
+```
+3. Run face recognition
+```
+./main ../../models/shuffle_optimize_0.25_512_121_quant.tflite encodings.txt
+```
+
